@@ -9,6 +9,10 @@ resource "aws_s3_bucket" "bucket2" {
 resource "aws_s3_bucket" "bucket3" {
 
 }
+resource "aws_s3_bucket" "bucket3" {
+	bucket = "terraform-20240808093027585500000001"
+}
+
 
 provider "aws" {
     region = "eu-west-1"
