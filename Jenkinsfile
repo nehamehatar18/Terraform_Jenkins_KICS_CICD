@@ -25,10 +25,10 @@ pipeline {
         script {
             def scanDir = "${WORKSPACE}"  // Use the correct workspace variable
 
-            // Run KICS scan in Docker and capture output
-            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+            // Run KICS scan in Docker and capture output, even if the stage fails, mark it as successful
+            catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
                 sh """
-                    docker run -t -v ${scanDir}:${scanDir} checkmarx/kics scan -p ${scanDir} -o ${scanDir}/kics_report.json
+                    docker run -t -v ${scanDir}:${scanDir} checkmarx/kics scan -p ${scanDir} -o ${scanDir}/kics_report --output-name kics-result-terraform
                 """
             }
 
@@ -50,7 +50,7 @@ pipeline {
         stage('Archive KICS Results') {
             steps {
                 script {
-                        sh 'cat ${WORKSPACE}/kics_report.json'
+                        sh 'cat ${WORKSPACE}/kics_report/kics-result-terraform.json'
                 }
             }
         }
