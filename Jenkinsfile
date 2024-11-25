@@ -16,8 +16,10 @@ pipeline {
         stage('Verify KICS Installation') {
             steps {
                 script {
+                    // Ensure PATH includes the directory containing 'kics'
                     sh '''
-                    ./scripts/kics_version.sh
+                    export PATH=$PATH:/root/kics/bin  # Add the directory to the PATH
+                    kics version  # Run the kics command after setting PATH
                     '''
                 }
                 }
