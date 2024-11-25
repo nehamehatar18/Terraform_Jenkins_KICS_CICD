@@ -1,10 +1,7 @@
 pipeline {
     agent any
 
-    environment {
-        // Add the directory where kics is installed to the PATH
-        PATH = "/root/kics/bin:${env.PATH}" // Adjust if your kics binary is located elsewhere
-    }
+
     
     stages {
         stage('Checkout Terraform Project') {
@@ -16,11 +13,7 @@ pipeline {
         stage('Verify KICS Installation') {
             steps {
                 script {
-                    // Ensure PATH includes the directory containing 'kics'
-                    sh '''
-                    export PATH=$PATH:/root/kics/bin  # Add the directory to the PATH
-                    kics version  # Run the kics command after setting PATH
-                    '''
+                    sh 'docker pull checkmarx/kics:latest'
                 }
                 }
             }
@@ -30,8 +23,14 @@ pipeline {
         stage('KICS SCAN') {
             steps {
                 script {
-                        sh './scripts/kics_scan.sh'
-                    }
+                    // Replace with your local path or Jenkins workspace path
+                    def scanDir = "${env.WORKSPACE}"  // Use Jenkins workspace for scanning
+
+                    // Run KICS scan in Docker and output to the same directory
+                    sh """
+                    docker run -t -v ${scanDir}:${scanDir} checkmarx/kics scan -p ${scanDir} -o ${scanDir}/
+                    """
+                }
                 }
             }
         
@@ -48,7 +47,7 @@ pipeline {
         stage('Archive KICS Results') {
             steps {
                 script {
-                        sh 'archiveArtifacts allowEmptyArchive: true, artifacts: 'kics-result-tf-cicd.json''
+                        sh 'cat ${env.WORKSPACE}/kics_report.json'
                 }
             }
         }
