@@ -1,53 +1,32 @@
 pipeline {
     agent any
     
-    environment {
-        AWS_ACCESS_KEY_ID = ""
-        AWS_SECRET_ACCESS_KEY = ""
-    }
-    
     stages {
         stage('Checkout Terraform Project') {
             steps {
-                git branch: 'main', url: 'https://github.com/NeeharikaRN/Terraform_Jenkins_CICD.git'
+                git branch: 'main', url: 'https://github.com/NeeharikaRN/Terraform_Jenkins_KICS_CICD.git'
             }
         }
-        
-        stage('INIT') {
+
+        stage('Verify KICS Installation') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'aws-key', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                        bat 'terraform init'
+                        sh 'kics version'
                     }
                 }
             }
         }
         
-        stage('SANITY CHECK') {
-            steps {
-                script {
-                        bat 'terraform validate'
-                }
-            }
-        }
         
-        stage('PLAN') {
+        stage('KICS SCAN') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'aws-key', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                        bat 'terraform plan -out "s3.tfplan"'
+                        sh 'kics scan --path *.tf -q /root/kics/assets/queries --report-formats "html,json" -o ./output  --output-name kics-result-tf-cicd'
                     }
                 }
             }
         }
         
-        stage('FORMAT') {
-            steps {
-                script {
-                    bat 'terraform fmt'
-                }
-            }
-        }
         
         stage('Approval') {
             steps {
@@ -57,24 +36,14 @@ pipeline {
             }
         }
         
-        stage('APPLY') {
+        stage('Archive KICS Results') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'aws-key', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                        bat 'terraform apply "s3.tfplan"'
-                    }
+                        sh 'archiveArtifacts allowEmptyArchive: true, artifacts: 'kics-result-tf-cicd.json''
                 }
             }
         }
         
-        stage('RESOURCES LIST') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'aws-key', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                        bat 'terraform state list'
-                    }
-                }
-            }
-        }
+
     }
 }
