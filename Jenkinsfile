@@ -16,7 +16,13 @@ pipeline {
         stage('Verify KICS Installation') {
             steps {
                 script {
-                    sh './scripts/kics_version.sh'
+                    sh '''
+                    export PATH=$PATH:/root/kics/bin
+                    source ~/.bash_profile
+                    # Add any other commands you want to run after this
+                    # For example, running your KICS tool
+                    kics --version
+                    '''
                 }
                 }
             }
