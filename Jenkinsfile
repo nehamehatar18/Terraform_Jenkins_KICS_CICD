@@ -10,9 +10,7 @@ pipeline {
 
         stage('Verify KICS Installation') {
             steps {
-                script {
                         kics version
-                    }
                 }
             }
         
