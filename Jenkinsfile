@@ -16,11 +16,7 @@ pipeline {
         stage('Verify KICS Installation') {
             steps {
                 script {
-                    def command = "kics version"
-                    def process = command.execute()
-                    process.waitFor()
-                    def output = process.text
-                    echo "KICS Version: ${output}"
+                    sh './scripts/kics_version.sh'
                 }
                 }
             }
@@ -30,7 +26,7 @@ pipeline {
         stage('KICS SCAN') {
             steps {
                 script {
-                        sh 'kics scan --path *.tf -q /root/kics/assets/queries --report-formats "html,json" -o ./output  --output-name kics-result-tf-cicd'
+                        sh './scripts/kics_scan.sh'
                     }
                 }
             }
