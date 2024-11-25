@@ -17,7 +17,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    kics --version
+                    ./scripts/kics_version.sh
                     '''
                 }
                 }
