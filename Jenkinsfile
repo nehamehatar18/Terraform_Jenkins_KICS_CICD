@@ -32,9 +32,7 @@ pipeline {
 
             // Check if the result is non-zero (indicating failure) and handle silently
             if (result != 0) {
-                echo "KICS Scan failed (exit code ${result}), but we are suppressing the error and continuing."
-            } else {
-                echo "KICS Scan passed successfully."
+
             }
 
             // Continue the pipeline without marking the stage as failed
