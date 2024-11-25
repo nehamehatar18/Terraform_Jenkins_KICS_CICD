@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Add the directory where kics is installed to the PATH
-        PATH = "/usr/local/bin:${env.PATH}" // Adjust if your kics binary is located elsewhere
+        PATH = "/root/kics/bin:${env.PATH}" // Adjust if your kics binary is located elsewhere
     }
     
     stages {
