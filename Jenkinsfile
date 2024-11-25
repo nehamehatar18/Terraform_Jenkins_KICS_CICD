@@ -25,13 +25,19 @@ pipeline {
         script {
             def scanDir = "${WORKSPACE}"  // Use the correct workspace variable
 
-            // Run KICS scan in Docker and capture output, even if the stage fails, mark it as successful
-            catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
-                sh """
-                    docker run -t -v ${scanDir}:${scanDir} checkmarx/kics scan -p ${scanDir} -o ${scanDir}/kics_report --output-name kics-result-terraform
-                """
+            // Run KICS scan in Docker and suppress any failure or error logs
+            def result = sh(script: """
+                docker run -t -v ${scanDir}:${scanDir} checkmarx/kics scan -p ${scanDir} -o ${scanDir}/kics_report.json
+            """, returnStatus: true, returnStdout: true)
+
+            // Check if the result is non-zero (indicating failure) and handle silently
+            if (result != 0) {
+                echo "KICS Scan failed (exit code ${result}), but we are suppressing the error and continuing."
+            } else {
+                echo "KICS Scan passed successfully."
             }
 
+            // Continue the pipeline without marking the stage as failed
             echo "KICS Scan completed, continuing with pipeline execution."
         }
                 }
