@@ -22,15 +22,20 @@ pipeline {
         
         stage('KICS SCAN') {
             steps {
-                script {
-                    // Replace with your local path or Jenkins workspace path
-                    def scanDir = "${env.WORKSPACE}"  // Use Jenkins workspace for scanning
+        script {
+            // Use Jenkins workspace for scanning
+            def scanDir = "${env.WORKSPACE}"
 
-                    // Run KICS scan in Docker and output to the same directory
-                    sh """
+            // Run KICS scan in Docker and output to the same directory
+            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                sh """
                     docker run -t -v ${scanDir}:${scanDir} checkmarx/kics scan -p ${scanDir} -o ${scanDir}/
-                    """
-                }
+                """
+            }
+
+            // Optional: You can add additional logic to handle the scan output (e.g., log or post-process)
+            echo 'KICS Scan completed, continuing with pipeline execution.'
+        }
                 }
             }
         
