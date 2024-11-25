@@ -15,7 +15,7 @@ pipeline {
                     }
                 }
             }
-        }
+        
         
         
         stage('KICS SCAN') {
@@ -25,7 +25,7 @@ pipeline {
                     }
                 }
             }
-        }
+        
         
         
         stage('Approval') {
