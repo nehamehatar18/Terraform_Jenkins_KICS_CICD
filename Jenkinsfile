@@ -1,5 +1,10 @@
 pipeline {
     agent any
+
+    environment {
+        // Add the directory where kics is installed to the PATH
+        PATH = "/usr/local/bin:${env.PATH}" // Adjust if your kics binary is located elsewhere
+    }
     
     stages {
         stage('Checkout Terraform Project') {
