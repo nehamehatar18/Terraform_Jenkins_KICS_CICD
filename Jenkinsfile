@@ -23,18 +23,16 @@ pipeline {
         stage('KICS SCAN') {
             steps {
         script {
-            // Use Jenkins workspace for scanning
-            def scanDir = "${env.WORKSPACE}"
+            def scanDir = "${WORKSPACE}"  // Use the correct workspace variable
 
-            // Run KICS scan in Docker and output to the same directory
+            // Run KICS scan in Docker and capture output
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                 sh """
-                    docker run -t -v ${scanDir}:${scanDir} checkmarx/kics scan -p ${scanDir} -o ${scanDir}/
+                    docker run -t -v ${scanDir}:${scanDir} checkmarx/kics scan -p ${scanDir} -o ${scanDir}/kics_report.json
                 """
             }
 
-            // Optional: You can add additional logic to handle the scan output (e.g., log or post-process)
-            echo 'KICS Scan completed, continuing with pipeline execution.'
+            echo "KICS Scan completed, continuing with pipeline execution."
         }
                 }
             }
@@ -52,7 +50,7 @@ pipeline {
         stage('Archive KICS Results') {
             steps {
                 script {
-                        sh 'cat ${env.WORKSPACE}/kics_report.json'
+                        sh 'cat ${WORKSPACE}/kics_report.json'
                 }
             }
         }
