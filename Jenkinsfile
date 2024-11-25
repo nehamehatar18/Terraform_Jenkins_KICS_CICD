@@ -10,7 +10,10 @@ pipeline {
 
         stage('Verify KICS Installation') {
             steps {
-                        kics version
+                                        script {
+                    def kicsVersion = sh(script: 'kics version', returnStdout: true).trim()
+                    echo "KICS Version: ${kicsVersion}"
+                }
                 }
             }
         
