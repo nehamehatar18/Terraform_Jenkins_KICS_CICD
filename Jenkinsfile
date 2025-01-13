@@ -54,7 +54,7 @@ pipeline {
         stage('Archive KICS Results') {
             steps {
                 script {
-                        sh 'cat ${WORKSPACE}/kics_report/kics-result-terraform.json'
+                        sh 'cat ${WORKSPACE}/kics_report.json'
                 }
             }
         }
