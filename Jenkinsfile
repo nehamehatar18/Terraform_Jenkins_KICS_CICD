@@ -27,7 +27,7 @@ pipeline {
 
             // Run KICS scan in Docker and suppress any failure or error logs
             def result = sh(script: """
-                docker run -t -v ${scanDir}:${scanDir} checkmarx/kics scan -p ${scanDir} -o ${scanDir}/kics_report.json
+                docker run -t -v ${scanDir}:${scanDir} checkmarx/kics scan -p ${scanDir} -o ${scanDir}/kics_report
             """, returnStatus: true, returnStdout: true)
 
             // Check if the result is non-zero (indicating failure) and handle silently
@@ -54,7 +54,7 @@ pipeline {
         stage('Archive KICS Results') {
             steps {
                 script {
-                        sh 'cat ${WORKSPACE}/kics_report.json'
+                        sh 'cat ${WORKSPACE}/kics_report/results.json'
                 }
             }
         }
